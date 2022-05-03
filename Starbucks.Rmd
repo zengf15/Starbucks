@@ -1,0 +1,66 @@
+---
+title: "Starbucks"
+author: "Fanyi Zeng"
+date: '2022-05-03'
+output: github_document
+---
+
+```{r data}
+starbucks <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-12-21/starbucks.csv')
+```
+
+```{r pkg}
+library(tidyverse)
+```
+
+First, let's take a look at the descriptives.
+
+```{r sum}
+summary(starbucks)
+```
+
+Choices for customers who want to order relatively low-calorie, sweet, creamy drinks: mostly frapucinos and mochas, and some hot chocolate.
+
+```{r calories}
+starbucks %>%
+  filter(size == "grande", milk == 1, whip == 1, sugar_g != 0) %>%
+  select(product_name, calories) %>%
+  arrange(calories)
+```
+
+Choices for customers who want to order healthy, low-sodium, sugar-free drinks: mostly brewed tea with no sodium and brewed coffee with low sodium.
+
+```{r sodium}
+starbucks %>%
+  filter(size == "grande", milk == 0, whip == 0, sugar_g == 0) %>%
+  select(product_name, sodium_mg) %>%
+  arrange(sodium_mg)
+```
+
+Choices for customers who want to order decaf, dairy free, low-sugar drinks: mostly herbal and fruit tea.
+
+```{r sugar}
+starbucks %>%
+  filter(size == "grande", caffeine_mg == 0, milk == 0) %>%
+  select(product_name, sugar_g) %>%
+  arrange(sugar_g)
+```
+
+The most unhealthy drinks in starbucks:
+(recommended daily sodium intake is 2300 mg, cholesterol is 300 mg, added sugar is 24g, trans-fat is 0)
+
+```{r unhealthy}
+starbucks %>%
+  filter(size == "grande", milk == 1, whip == 1, calories > 320, sugar_g > 49, cholesterol_mg > 30, sodium_mg > 200, total_fat_g > 10, trans_fat_g !=0) %>%
+  arrange(desc(calories))
+```
+
+The most healthy drinks in starbucks:
+
+```{r healthy}
+starbucks %>%
+  filter(size == "grande", whip == 0, calories < 130, sugar_g < 18, cholesterol_mg == 0, sodium_mg < 70, total_fat_g < 1, trans_fat_g == 0) %>%
+  arrange(desc(calories))
+```
+
+It should come as unsurprising that frapuccino, mocha, and hot chocolate are the relatively unhealthy drinks in Starbucks. I am surprised to discover that there are some healthier options such as brewed tea and, of course, pure coffee. However, even the healthier tea and coffee options don't seem to have a lot of nutrients (low to no fiber). I would suggest that Starbucks add vitamin info to the tea options to increase marketability.
